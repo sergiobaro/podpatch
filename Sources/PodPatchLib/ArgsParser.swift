@@ -34,19 +34,19 @@ class ArgsParser {
     static let supportedProperties = ["path", "branch"]
     
     func parse(args: [String]) throws -> Args {
-        guard args.count >= 2 else {
+        guard args.count >= 1 else {
             throw ArgsParserError.missingPodName
         }
-        guard args.count >= 3 else {
+        guard args.count >= 2 else {
             throw ArgsParserError.missingPatch
         }
         
-        let podName = args[1]
+        let podName = args[0]
         if podName.isEmpty {
             throw ArgsParserError.missingPodName
         }
         
-        let patch = args[2].components(separatedBy: ":")
+        let patch = args[1].components(separatedBy: ":")
         guard patch.count == 2 else {
             throw ArgsParserError.patchWrongFormat
         }
