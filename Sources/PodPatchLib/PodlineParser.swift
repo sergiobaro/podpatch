@@ -49,19 +49,19 @@ class PodlineParser {
   }
 }
 
-extension String {
+private extension String {
   var nsRange: NSRange {
     NSRange(self.startIndex..<self.endIndex, in: self)
   }
 }
 
-extension NSRegularExpression {
+private extension NSRegularExpression {
   func matches(in string: String) -> [NSTextCheckingResult] {
     matches(in: string, options: [], range: string.nsRange)
   }
 }
 
-extension NSTextCheckingResult {
+private extension NSTextCheckingResult {
   func capture(at index: Int, in string: String) -> String {
     let nsRange = self.range(at: index)
     let range = Range(nsRange, in: string)!

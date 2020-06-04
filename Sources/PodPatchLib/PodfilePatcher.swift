@@ -1,7 +1,14 @@
 import Foundation
 
-enum PodfilePatcherError: LocalizedError {
+enum PodfilePatcherError: LocalizedError, Equatable {
   case podNotFound(String)
+    
+  var errorDescription: String? {
+    switch self {
+    case .podNotFound(let podName):
+      return "Pod '\(podName)' not found in Podfile"
+    }
+  }
 }
 
 class PodfilePatcher {

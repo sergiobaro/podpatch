@@ -5,6 +5,17 @@ class PodfilePatcherTests: XCTestCase {
 
   let patcher = PodfilePatcher()
 
+  func test_patch_podNotFoundError() throws {
+    let podfile = """
+    pod 'OtherPod', :git => 'https://url.com', :branch => 'develop'
+    """
+    let args = Args(podName: "Pod", property: "path", value: "value")
+    
+    XCTAssertThrowsError(try patcher.patch(podfile: podfile, args: args)) { error in
+      XCTAssertEqual(error as? PodfilePatcherError, .podNotFound("Pod"))
+    }
+  }
+  
   func test_patch_withPath() throws {
     let podfile = """
     pod 'Pod', :git => 'https://url.com', :branch => 'develop'
