@@ -7,6 +7,7 @@ class PodlineParserTests: XCTestCase {
 
   func test_parse() {
     let result = parser.parse(line: "  pod 'Pod', :git => 'https://url.com', :branch => 'develop'")
+    XCTAssertEqual(result.prefix, "  ")
     XCTAssertEqual(result.podName, "Pod")
     XCTAssertEqual(result.options.count, 2)
     XCTAssertEqual(result.options["git"], "https://url.com")

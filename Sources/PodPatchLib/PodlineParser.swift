@@ -1,6 +1,7 @@
 import Foundation
 
 struct Podline {
+  let prefix: String
   let podName: String
   var options: [String: String]
 }
@@ -8,13 +9,21 @@ struct Podline {
 class PodlineParser {
 
   func parse(line: String) -> Podline {
+    let prefix = findPrefix(line)
     let podName = findPodName(line)
     let options = findOptions(line)
 
     return Podline(
+      prefix: prefix,
       podName: podName,
       options: options
     )
+  }
+  
+  private func findPrefix(_ line: String) -> String {
+    let regex = try! NSRegularExpression(pattern: "^(\\s*)", options: [])
+    let matches = regex.matches(in: line)
+    return matches.first!.capture(at: 1, in: line)
   }
 
   private func findPodName(_ line: String) -> String {

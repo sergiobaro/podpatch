@@ -7,15 +7,15 @@ class PodfilePatcherTests: XCTestCase {
 
   func test_patch_withPath() throws {
     let podfile = """
-        pod 'Pod', :git => 'https://url.com', :branch => 'develop'
-        """
+    pod 'Pod', :git => 'https://url.com', :branch => 'develop'
+    """
     let args = Args(podName: "Pod", property: "path", value: "../Pod")
 
     let result = try patcher.patch(podfile: podfile, args: args)
 
     let expected = """
-        pod 'Pod', :path => '../Pod'
-        """
+    pod 'Pod', :path => '../Pod'
+    """
     XCTAssertEqual(result, expected)
   }
 
@@ -47,6 +47,20 @@ class PodfilePatcherTests: XCTestCase {
     pod 'Pod1', :git => 'https://url.com/pod1', :branch => 'develop'
     pod 'Pod2', :git => 'https://url.com/pod2', :branch => 'another/branch'
     pod 'Pod3', :git => 'https://url.com/pod3', :branch => 'develop'
+    """
+    XCTAssertEqual(result, expected)
+  }
+  
+  func test_path_withSpaces() throws {
+    let podfile = """
+      pod 'Pod', :git => 'https://url.com', :branch => 'develop'
+    """
+    let args = Args(podName: "Pod", property: "path", value: "../Pod")
+
+    let result = try patcher.patch(podfile: podfile, args: args)
+
+    let expected = """
+      pod 'Pod', :path => '../Pod'
     """
     XCTAssertEqual(result, expected)
   }

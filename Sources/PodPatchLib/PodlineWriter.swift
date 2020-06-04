@@ -9,7 +9,7 @@ class PodlineWriter {
     let podString = writePod(podline.podName)
     let optionsString = writeOptions(podline.options)
 
-    return ([podString] + optionsString).joined(separator: ", ")
+    return podline.prefix + ([podString] + optionsString).joined(separator: ", ")
   }
 
   private func writePod(_ podName: String) -> String {
