@@ -7,17 +7,17 @@ enum PodfilePatcherError: LocalizedError {
 class PodfilePatcher {
 
   func patch(podfile: String, args: Args) throws -> String {
-    guard let line = findLineWithPod(podfile: podfile, podName: args.podName) else {
+    guard let lineWithPod = findLineWithPod(podfile: podfile, podName: args.podName) else {
       throw PodfilePatcherError.podNotFound(args.podName)
     }
 
-    var podline = PodlineParser().parse(line: line)
+    var podline = PodlineParser().parse(line: lineWithPod)
     podline.options[args.property] = args.value
     podline.options = filterOptions(podline.options)
 
     let newPodline = PodlineWriter().write(podline)
 
-    return podfile.replacingOccurrences(of: podfile, with: newPodline)
+    return podfile.replacingOccurrences(of: lineWithPod, with: newPodline)
   }
 
   private func findLineWithPod(podfile: String, podName: String) -> String? {

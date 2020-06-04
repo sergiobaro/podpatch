@@ -32,4 +32,22 @@ class PodfilePatcherTests: XCTestCase {
     """
     XCTAssertEqual(result, expected)
   }
+
+  func test_patch_multipleLines_withBranch() throws {
+    let podfile = """
+    pod 'Pod1', :git => 'https://url.com/pod1', :branch => 'develop'
+    pod 'Pod2', :git => 'https://url.com/pod2', :branch => 'develop'
+    pod 'Pod3', :git => 'https://url.com/pod3', :branch => 'develop'
+    """
+    let args = Args(podName: "Pod2", property: "branch", value: "another/branch")
+
+    let result = try patcher.patch(podfile: podfile, args: args)
+
+    let expected = """
+    pod 'Pod1', :git => 'https://url.com/pod1', :branch => 'develop'
+    pod 'Pod2', :git => 'https://url.com/pod2', :branch => 'another/branch'
+    pod 'Pod3', :git => 'https://url.com/pod3', :branch => 'develop'
+    """
+    XCTAssertEqual(result, expected)
+  }
 }
