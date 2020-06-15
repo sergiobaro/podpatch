@@ -20,9 +20,11 @@ class PodfilePatcher {
 
     var podline = PodlineParser().parse(line: lineWithPod)
     podline.options[args.property] = args.value
-    podline.options = filterOptions(podline.options)
+    let filteredOptions = filterOptions(podline.options)
+    let commentedOptions = discardedOptions(from: podline.options, validOptions: filteredOptions)
+    podline.options = filteredOptions
 
-    let newPodline = PodlineWriter().write(podline)
+    let newPodline = PodlineWriter().write(podline, commentedOptions: commentedOptions)
 
     return podfile.replacingOccurrences(of: lineWithPod, with: newPodline)
   }
@@ -40,5 +42,14 @@ class PodfilePatcher {
     }
 
     return options
+  }
+  
+  private func discardedOptions(from options: [String: String], validOptions: [String: String]) -> [String: String] {
+    var result = options
+    for key in validOptions.keys {
+      result.removeValue(forKey: key)
+    }
+    
+    return result
   }
 }

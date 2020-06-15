@@ -5,11 +5,17 @@ class PodlineWriter {
   private let pathOptionsOrder = ["path"]
   private let gitOptionsOrder = ["git", "branch"]
 
-  func write(_ podline: Podline) -> String {
+  func write(_ podline: Podline, commentedOptions: [String: String]) -> String {
     let podString = writePod(podline.podName)
     let optionsString = writeOptions(podline.options)
-
-    return podline.prefix + ([podString] + optionsString).joined(separator: ", ")
+    
+    var result = podline.prefix + ([podString] + optionsString).joined(separator: ", ")
+    if !commentedOptions.isEmpty {
+      let commentedOptionsString = writeOptions(commentedOptions)
+      result += (" # " + commentedOptionsString.joined(separator: ", "))
+    }
+    
+    return result
   }
 
   private func writePod(_ podName: String) -> String {

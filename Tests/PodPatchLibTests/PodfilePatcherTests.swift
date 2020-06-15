@@ -25,7 +25,7 @@ class PodfilePatcherTests: XCTestCase {
     let result = try patcher.patch(podfile: podfile, args: args)
 
     let expected = """
-    pod 'Pod', :path => '../Pod'
+    pod 'Pod', :path => '../Pod' # :git => 'https://url.com', :branch => 'develop'
     """
     XCTAssertEqual(result, expected)
   }
@@ -71,7 +71,7 @@ class PodfilePatcherTests: XCTestCase {
     let result = try patcher.patch(podfile: podfile, args: args)
 
     let expected = """
-      pod 'Pod', :path => '../Pod'
+      pod 'Pod', :path => '../Pod' # :git => 'https://url.com', :branch => 'develop'
     """
     XCTAssertEqual(result, expected)
   }
