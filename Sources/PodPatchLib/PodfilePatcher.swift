@@ -19,7 +19,10 @@ class PodfilePatcher {
     }
 
     var podline = PodlineParser().parse(line: lineWithPod)
-    podline.options[args.property] = args.value
+    if args.property == .branch {
+      podline.options[PodProperty.path.rawValue] = nil
+    }
+    podline.options[args.property.rawValue] = args.value
     let filteredOptions = filterOptions(podline.options)
     let commentedOptions = discardedOptions(from: podline.options, validOptions: filteredOptions)
     podline.options = filteredOptions
@@ -37,8 +40,8 @@ class PodfilePatcher {
   }
 
   private func filterOptions(_ options: [String: String]) -> [String: String] {
-    if options.keys.contains("path") {
-      return ["path": options["path"]!]
+    if options.keys.contains(PodProperty.path.rawValue) {
+      return [PodProperty.path.rawValue: options[PodProperty.path.rawValue]!]
     }
 
     return options

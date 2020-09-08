@@ -45,17 +45,7 @@ class ArgsParserTests: XCTestCase {
         let result = try parser.parse(args: args)
         
         XCTAssertEqual(result.podName, "pod")
-        XCTAssertEqual(result.property, "path")
+        XCTAssertEqual(result.property, PodProperty.path)
         XCTAssertEqual(result.value, "../Core")
     }
-    
-    /*
-
-     case missingPodName
-     case missingPatch
-     case patchWrongFormat
-     case propertyNotSupported(String)
-     case valueIsEmpty(String)
-     */
-
 }

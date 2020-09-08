@@ -1,8 +1,13 @@
 import Foundation
 
+enum PodProperty: String, CaseIterable {
+  case path
+  case branch
+}
+
 struct Args {
     let podName: String
-    let property: String
+    let property: PodProperty
     let value: String
 }
 
@@ -31,7 +36,7 @@ enum ArgsParserError: LocalizedError, Equatable {
 
 class ArgsParser {
     
-    static let supportedProperties = ["path", "branch"]
+    static let supportedProperties = PodProperty.allCases
     
     func parse(args: [String]) throws -> Args {
         guard args.count >= 1 else {
@@ -42,10 +47,6 @@ class ArgsParser {
         }
         
         let podName = args[0]
-        if podName.isEmpty {
-            throw ArgsParserError.missingPodName
-        }
-        
         let patch = args[1].components(separatedBy: ":")
         guard patch.count == 2 else {
             throw ArgsParserError.patchWrongFormat
@@ -53,14 +54,14 @@ class ArgsParser {
         
         let property = patch[0]
         let value = patch[1]
-        
-        guard Self.supportedProperties.contains(property) else {
+
+        guard let podOption = PodProperty(rawValue: property) else {
             throw ArgsParserError.propertyNotSupported(property)
         }
         if value.isEmpty {
             throw ArgsParserError.valueIsEmpty(property)
         }
         
-        return Args(podName: podName, property: property, value: value)
+        return Args(podName: podName, property: podOption, value: value)
     }
 }
