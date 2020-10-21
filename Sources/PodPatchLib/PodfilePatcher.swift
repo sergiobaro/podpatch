@@ -2,7 +2,7 @@ import Foundation
 
 enum PodfilePatcherError: LocalizedError, Equatable {
   case podNotFound(String)
-    
+  
   var errorDescription: String? {
     switch self {
     case .podNotFound(let podName):
@@ -12,42 +12,37 @@ enum PodfilePatcherError: LocalizedError, Equatable {
 }
 
 class PodfilePatcher {
-
+  
   func patch(podfile: String, args: Args) throws -> String {
-    guard let lineWithPod = findLineWithPod(podfile: podfile, podName: args.podName) else {
+    guard let lineWithPod = PodlineFinder().findLinesWithPod(podfile: podfile, podName: args.podName) else {
       throw PodfilePatcherError.podNotFound(args.podName)
     }
-
+    
     var podline = PodlineParser().parse(line: lineWithPod)
     if args.property == .branch {
       podline.options[PodProperty.path.rawValue] = nil
     }
-    podline.options[args.property.rawValue] = args.value
-    let filteredOptions = filterOptions(podline.options)
-    let commentedOptions = discardedOptions(from: podline.options, validOptions: filteredOptions)
-    podline.options = filteredOptions
-
-    let newPodline = PodlineWriter().write(podline, commentedOptions: commentedOptions)
-
+    podline.options[args.property.rawValue] = "'\(args.value)'"
+    let validOptions = optionsToKeep(podline.options)
+    let commentedOptions = optionsToComment(from: podline.options, validOptions: validOptions)
+    podline.options = validOptions
+    
+    let newPodline = PodlineWriterFactory.writer(for: podline).write(podline, commentedOptions: commentedOptions)
+    
     return podfile.replacingOccurrences(of: lineWithPod, with: newPodline)
   }
-
-  private func findLineWithPod(podfile: String, podName: String) -> String? {
-    podfile
-      .split(separator: "\n")
-      .first { $0.contains("pod '\(podName)'") }
-      .map { String($0) }
-  }
-
-  private func filterOptions(_ options: [String: String]) -> [String: String] {
-    if options.keys.contains(PodProperty.path.rawValue) {
-      return [PodProperty.path.rawValue: options[PodProperty.path.rawValue]!]
-    }
-
+  
+  private func optionsToKeep(_ options: [String: String]) -> [String: String] {
+    guard options.keys.contains(PodProperty.path.rawValue) else { return options }
+    
+    var options = options
+    options.removeValue(forKey: PodProperty.branch.rawValue)
+    options.removeValue(forKey: PodProperty.git.rawValue)
+    
     return options
   }
   
-  private func discardedOptions(from options: [String: String], validOptions: [String: String]) -> [String: String] {
+  private func optionsToComment(from options: [String: String], validOptions: [String: String]) -> [String: String] {
     var result = options
     for key in validOptions.keys {
       result.removeValue(forKey: key)

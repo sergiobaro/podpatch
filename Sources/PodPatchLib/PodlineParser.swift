@@ -4,6 +4,7 @@ struct Podline {
   let prefix: String
   let podName: String
   var options: [String: String]
+  var isMultiline: Bool
 }
 
 class PodlineParser {
@@ -16,7 +17,8 @@ class PodlineParser {
     return Podline(
       prefix: prefix,
       podName: podName,
-      options: options
+      options: options,
+      isMultiline: line.contains("\n")
     )
   }
   
@@ -33,7 +35,7 @@ class PodlineParser {
   }
 
   private func findOptions(_ line: String) -> [String: String] {
-    let regex = try! NSRegularExpression(pattern: ":(\\w+) => '([^']+)'", options: [])
+    let regex = try! NSRegularExpression(pattern: ":(\\w+) => ('[^']+'|false|true)", options: [])
     let matches = regex.matches(in: line)
 
     var result = [String: String]()
