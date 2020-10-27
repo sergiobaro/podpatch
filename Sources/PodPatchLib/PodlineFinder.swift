@@ -13,7 +13,7 @@ class PodlineFinder {
           lines.append(String(line))
         }
       } else if found {
-        if !line.contains("pod '") && !line.match(pattern: "end$") {
+        if belongsToPod(line) {
           lines.append(String(line))
         } else {
           found = false
@@ -23,11 +23,8 @@ class PodlineFinder {
     
     return lines.isEmpty ? nil : lines.joined(separator: "\n")
   }
-}
-
-private extension String.SubSequence {
     
-    func match(pattern: String) -> Bool {
-        self.range(of: pattern, options: .regularExpression, range: nil, locale: nil) != nil
-    }
+  private func belongsToPod(_ line: Substring) -> Bool {
+    line.trimmingCharacters(in: .whitespaces).starts(with: ":")
+  }
 }
