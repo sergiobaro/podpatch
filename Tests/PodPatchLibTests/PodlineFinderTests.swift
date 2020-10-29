@@ -39,6 +39,20 @@ class PodlineFinderTests: XCTestCase {
     """
     XCTAssertEqual(expected, result)
   }
+  
+  func test_multiline_withComments() {
+    let podfile = """
+      pod 'Pod1',
+        :path => '../Pod1',
+        # :git => 'https://git.com/pod1',
+        # :branch => 'develop',
+        :inhibit_warnings => false
+    """
+    
+    let result = finder.findLinesWithPod(podfile: podfile, podName: "Pod1")
+    
+    XCTAssertEqual(podfile, result)
+  }
     
   func test_multline_end() {
       let podfile = """

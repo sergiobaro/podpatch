@@ -110,4 +110,25 @@ class PodfilePatcherTests: XCTestCase {
     """
     XCTAssertEqual(result, expected)
   }
+    
+  func test_fromPathToBranch() throws {
+    let podfile = """
+      pod 'Pod1',
+        :path => '../Pod1',
+        # :git => 'https://git.com/pod1',
+        # :branch => 'develop',
+        :inhibit_warnings => false
+    """
+    let args = Args(podName: "Pod1", property: .branch, value: "develop")
+    
+    let result = try patcher.patch(podfile: podfile, args: args)
+    
+    let expected = """
+      pod 'Pod1',
+        :git => 'https://git.com/pod1',
+        :branch => 'develop',
+        :inhibit_warnings => false
+    """
+    XCTAssertEqual(result, expected)
+  }
 }

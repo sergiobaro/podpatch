@@ -42,4 +42,23 @@ class PodlineParserTests: XCTestCase {
     XCTAssertEqual(result.options["branch"], "'develop'")
     XCTAssertEqual(result.options["inhibit_warnings"], "false")
   }
+  
+  func test_parse_multiline_withComments() {
+    let line = """
+      pod 'Pod1',
+        :path => '../Pod1',
+        # :git => 'https://git.com/pod1',
+        # :branch => 'develop',
+        :inhibit_warnings => false
+    """
+    let result = parser.parse(line: line)
+    
+    XCTAssertEqual(result.prefix, "  ")
+    XCTAssertEqual(result.podName, "Pod1")
+    XCTAssertEqual(result.options.count, 4)
+    XCTAssertEqual(result.options["path"], "'../Pod1'")
+    XCTAssertEqual(result.options["git"], "'https://git.com/pod1'")
+    XCTAssertEqual(result.options["branch"], "'develop'")
+    XCTAssertEqual(result.options["inhibit_warnings"], "false")
+  }
 }

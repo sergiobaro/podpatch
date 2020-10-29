@@ -25,6 +25,7 @@ class PodlineFinder {
   }
     
   private func belongsToPod(_ line: Substring) -> Bool {
-    line.trimmingCharacters(in: .whitespaces).starts(with: ":")
+    line.trimmingCharacters(in: .whitespaces).starts(with: ":") ||
+        line.trimmingCharacters(in: .whitespaces).starts(with: "# :")
   }
 }
