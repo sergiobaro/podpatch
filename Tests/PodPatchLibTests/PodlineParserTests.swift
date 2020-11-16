@@ -11,6 +11,7 @@ class PodlineParserTests: XCTestCase {
     XCTAssertEqual(result.prefix, "  ")
     XCTAssertEqual(result.podName, "Pod")
     XCTAssertEqual(result.options.count, 2)
+    XCTAssertEqual(result.optionsOrder, ["git", "branch"])
     XCTAssertEqual(result.options["git"], "'https://url.com'")
     XCTAssertEqual(result.options["branch"], "'develop'")
   }
@@ -20,6 +21,7 @@ class PodlineParserTests: XCTestCase {
     let result = parser.parse(line: line)
     XCTAssertEqual(result.prefix, "  ")
     XCTAssertEqual(result.podName, "Pod")
+    XCTAssertEqual(result.optionsOrder, ["path", "git", "branch"])
     XCTAssertEqual(result.options.count, 3)
     XCTAssertEqual(result.options["path"], "'../Pod'")
     XCTAssertEqual(result.options["git"], "'https://url.com'")
@@ -37,6 +39,7 @@ class PodlineParserTests: XCTestCase {
     
     XCTAssertEqual(result.prefix, "  ")
     XCTAssertEqual(result.podName, "Pod")
+    XCTAssertEqual(result.optionsOrder, ["git", "branch", "inhibit_warnings"])
     XCTAssertEqual(result.options.count, 3)
     XCTAssertEqual(result.options["git"], "'https://url.com'")
     XCTAssertEqual(result.options["branch"], "'develop'")
@@ -55,6 +58,7 @@ class PodlineParserTests: XCTestCase {
     
     XCTAssertEqual(result.prefix, "  ")
     XCTAssertEqual(result.podName, "Pod1")
+    XCTAssertEqual(result.optionsOrder, ["path", "git", "branch", "inhibit_warnings"])
     XCTAssertEqual(result.options.count, 4)
     XCTAssertEqual(result.options["path"], "'../Pod1'")
     XCTAssertEqual(result.options["git"], "'https://git.com/pod1'")

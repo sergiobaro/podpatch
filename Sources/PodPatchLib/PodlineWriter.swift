@@ -1,7 +1,7 @@
 import Foundation
 
 protocol PodlineWriter {
-  func write(_ podline: Podline, commentedOptions: [String: String]) -> String
+  func write(_ podline: Podline, optionsToCommentOut: [String]) -> String
 }
 
 class PodlineWriterFactory {

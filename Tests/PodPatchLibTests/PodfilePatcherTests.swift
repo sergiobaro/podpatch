@@ -111,7 +111,7 @@ class PodfilePatcherTests: XCTestCase {
     XCTAssertEqual(result, expected)
   }
     
-  func test_fromPathToBranch() throws {
+  func test_multiline_fromPathToBranch() throws {
     let podfile = """
       pod 'Pod1',
         :path => '../Pod1',

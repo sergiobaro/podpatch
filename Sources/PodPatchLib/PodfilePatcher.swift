@@ -19,35 +19,46 @@ class PodfilePatcher {
     }
     
     var podline = PodlineParser().parse(line: lineWithPod)
-    if args.property == .branch {
-      podline.options[PodProperty.path.rawValue] = nil
-    }
-    podline.options[args.property.rawValue] = "'\(args.value)'"
-    let validOptions = optionsToKeep(podline.options)
-    let commentedOptions = optionsToComment(from: podline.options, validOptions: validOptions)
-    podline.options = validOptions
-    
-    let newPodline = PodlineWriterFactory.writer(for: podline).write(podline, commentedOptions: commentedOptions)
+    podline.options = genOptions(podline, args: args)
+    podline.optionsOrder = genOptionsOrder(podline, args: args)
+
+    let keepOptions = optionsToKeep(podline.options)
+    let optionsToCommentOut = Array(Set(podline.options.keys).subtracting(keepOptions))
+
+    let podlineWriter = PodlineWriterFactory.writer(for: podline)
+    let newPodline = podlineWriter.write(podline, optionsToCommentOut: optionsToCommentOut)
     
     return podfile.replacingOccurrences(of: lineWithPod, with: newPodline)
   }
   
-  private func optionsToKeep(_ options: [String: String]) -> [String: String] {
-    guard options.keys.contains(PodProperty.path.rawValue) else { return options }
+  private func optionsToKeep(_ options: [String: String]) -> [String] {
+    guard options.keys.contains(PodProperty.path.rawValue) else {
+      return Array(options.keys)
+    }
     
     var options = options
     options.removeValue(forKey: PodProperty.branch.rawValue)
     options.removeValue(forKey: PodProperty.git.rawValue)
     
-    return options
+    return Array(options.keys)
   }
-  
-  private func optionsToComment(from options: [String: String], validOptions: [String: String]) -> [String: String] {
-    var result = options
-    for key in validOptions.keys {
-      result.removeValue(forKey: key)
+
+  private func genOptionsOrder(_ podline: Podline, args: Args) -> [String] {
+    if podline.optionsOrder.contains(args.property.rawValue) {
+      return podline.optionsOrder
     }
     
-    return result
+    return [args.property.rawValue] + podline.optionsOrder
+  }
+
+  private func genOptions(_ podline: Podline, args: Args) -> [String: String] {
+    var options = podline.options
+
+    if args.property == .branch {
+      options[PodProperty.path.rawValue] = nil
+    }
+    options[args.property.rawValue] = "'\(args.value)'"
+
+    return options
   }
 }

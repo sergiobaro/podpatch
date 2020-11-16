@@ -3,6 +3,7 @@ import Foundation
 struct Podline {
   let prefix: String
   let podName: String
+  var optionsOrder: [String]
   var options: [String: String]
   var isMultiline: Bool
 }
@@ -12,11 +13,12 @@ class PodlineParser {
   func parse(line: String) -> Podline {
     let prefix = findPrefix(line)
     let podName = findPodName(line)
-    let options = findOptions(line)
+    let (optionsOrder, options) = findOptions(line)
 
     return Podline(
       prefix: prefix,
       podName: podName,
+      optionsOrder: optionsOrder,
       options: options,
       isMultiline: line.contains("\n")
     )
@@ -34,20 +36,22 @@ class PodlineParser {
     return matches.first!.capture(at: 1, in: line)
   }
 
-  private func findOptions(_ line: String) -> [String: String] {
+  private func findOptions(_ line: String) -> (order: [String], options: [String: String]) {
     let regex = try! NSRegularExpression(pattern: ":(\\w+) => ('[^']+'|false|true)", options: [])
     let matches = regex.matches(in: line)
 
-    var result = [String: String]()
+    var order = [String]()
+    var options = [String: String]()
 
     for match in matches {
       let property = match.capture(at: 1, in: line)
       let value = match.capture(at: 2, in: line)
 
-      result[property] = value
+      order.append(property)
+      options[property] = value
     }
 
-    return result
+    return (order, options)
   }
 }
 
