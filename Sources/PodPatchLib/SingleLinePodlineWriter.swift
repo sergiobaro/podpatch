@@ -1,16 +1,16 @@
 import Foundation
 
 class SingleLinePodlineWriter: PodlineWriter {
-  
-  func write(_ podline: Podline, optionsToCommentOut: [String]) -> String {
-    let podString = writePod(podline.podName)
-    let (validOptions, commentOptions) = splitOptions(podline.options, optionsToCommentOut: optionsToCommentOut)
 
-    let optionsString = writeOptions(validOptions, order: podline.optionsOrder)
+  func write(_ podToWrite: PodToWrite) -> String {
+    let podString = writePod(podToWrite.podName)
+    let (validOptions, commentOptions) = splitOptions(podToWrite.options, optionsToCommentOut: podToWrite.optionsToCommentOut)
 
-    var result = podline.prefix + ([podString] + optionsString).joined(separator: ", ")
+    let optionsString = writeOptions(validOptions, order: podToWrite.optionsOrder)
+
+    var result = podToWrite.prefix + ([podString] + optionsString).joined(separator: ", ")
     if !commentOptions.isEmpty {
-      let commentOptionsString = writeOptions(commentOptions, order: podline.optionsOrder)
+      let commentOptionsString = writeOptions(commentOptions, order: podToWrite.optionsOrder)
       result += (" # " + commentOptionsString.joined(separator: ", "))
     }
 

@@ -18,47 +18,12 @@ class PodfilePatcher {
       throw PodfilePatcherError.podNotFound(args.podName)
     }
     
-    var podline = PodlineParser().parse(line: lineWithPod)
-    podline.options = genOptions(podline, args: args)
-    podline.optionsOrder = genOptionsOrder(podline, args: args)
+    let podline = PodlineParser().parse(line: lineWithPod)
+    let podToWrite = PodlineMapper().map(podline: podline, args: args)
 
-    let keepOptions = optionsToKeep(podline.options)
-    let optionsToCommentOut = Array(Set(podline.options.keys).subtracting(keepOptions))
-
-    let podlineWriter = PodlineWriterFactory.writer(for: podline)
-    let newPodline = podlineWriter.write(podline, optionsToCommentOut: optionsToCommentOut)
+    let podlineWriter = PodlineWriterFactory.writer(for: podToWrite)
+    let newPodline = podlineWriter.write(podToWrite)
     
     return podfile.replacingOccurrences(of: lineWithPod, with: newPodline)
-  }
-  
-  private func optionsToKeep(_ options: [String: String]) -> [String] {
-    guard options.keys.contains(PodProperty.path.rawValue) else {
-      return Array(options.keys)
-    }
-    
-    var options = options
-    options.removeValue(forKey: PodProperty.branch.rawValue)
-    options.removeValue(forKey: PodProperty.git.rawValue)
-    
-    return Array(options.keys)
-  }
-
-  private func genOptionsOrder(_ podline: Podline, args: Args) -> [String] {
-    if podline.optionsOrder.contains(args.property.rawValue) {
-      return podline.optionsOrder
-    }
-    
-    return [args.property.rawValue] + podline.optionsOrder
-  }
-
-  private func genOptions(_ podline: Podline, args: Args) -> [String: String] {
-    var options = podline.options
-
-    if args.property == .branch {
-      options[PodProperty.path.rawValue] = nil
-    }
-    options[args.property.rawValue] = "'\(args.value)'"
-
-    return options
   }
 }

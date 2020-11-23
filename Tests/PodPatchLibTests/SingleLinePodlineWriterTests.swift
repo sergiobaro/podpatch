@@ -6,21 +6,22 @@ class SingleLinePodlineWriterTests: XCTestCase {
   let writer = SingleLinePodlineWriter()
   
   func test_write_path() {
-    let podline = Podline(
+    let podToWrite = PodToWrite(
       prefix: "",
       podName: "Pod",
       optionsOrder: ["path"],
       options: ["path": "'../Pod'"],
-      isMultiline: false
+      isMultiline: false,
+      optionsToCommentOut: []
     )
 
-    let result = writer.write(podline, optionsToCommentOut: [])
+    let result = writer.write(podToWrite)
 
     XCTAssertEqual(result, "pod 'Pod', :path => '../Pod'")
   }
   
   func test_write_branch() {
-    let podline = Podline(
+    let podToWrite = PodToWrite(
       prefix: "",
       podName: "Pod",
       optionsOrder: ["git", "branch"],
@@ -28,29 +29,30 @@ class SingleLinePodlineWriterTests: XCTestCase {
         "git": "'https://git.com/pod'",
         "branch": "'feature/branch'"
       ],
-      isMultiline: false
+      isMultiline: false,
+      optionsToCommentOut: []
     )
 
-    let result = writer.write(podline, optionsToCommentOut: [])
+    let result = writer.write(podToWrite)
     XCTAssertEqual(result, "pod 'Pod', :git => 'https://git.com/pod', :branch => 'feature/branch'")
   }
-  
+
   func test_write_path_withPrefix() {
-    let podline = Podline(
+    let podToWrite = PodToWrite(
       prefix: "  ",
       podName: "Pod",
       optionsOrder: ["path"],
       options: ["path": "'../Pod'"],
-      isMultiline: false
+      isMultiline: false,
+      optionsToCommentOut: []
     )
 
-    let result = writer.write(podline, optionsToCommentOut: [])
-
+    let result = writer.write(podToWrite)
     XCTAssertEqual(result, "  pod 'Pod', :path => '../Pod'")
   }
-  
+
   func test_write_path_withCommentedOptions() {
-    let podline = Podline(
+    let podToWrite = PodToWrite(
       prefix: "  ",
       podName: "Pod",
       optionsOrder: ["path", "git", "branch"],
@@ -59,10 +61,11 @@ class SingleLinePodlineWriterTests: XCTestCase {
         "git": "'https://git.com/pod'",
         "branch": "'feature/branch'"
       ],
-      isMultiline: false
+      isMultiline: false,
+      optionsToCommentOut: ["git", "branch"]
     )
 
-    let result = writer.write(podline, optionsToCommentOut: ["git", "branch"])
+    let result = writer.write(podToWrite)
     XCTAssertEqual(result, "  pod 'Pod', :path => '../Pod' # :git => 'https://git.com/pod', :branch => 'feature/branch'")
   }
 }
